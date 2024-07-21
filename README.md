@@ -7,3 +7,5 @@ In development. Now clicker app can:
 - Exit game (Alt-F4).
 
 Challenged to do is set in `__main__.py` file.
+
+Maybe this clicker won't work on your screen resolution. I'm using 3440x1440.
