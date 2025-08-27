@@ -76,7 +76,7 @@ class BaseChallengePerformer:
         pyautogui.click(x=x, y=y)
 
         for i in range(number - 1):
-            x, y = self._clicker.wait_for_image_appears("start_again")
+            x, y = self._clicker.wait_for_image_appears("start_again", no_energy_handler)
             pyautogui.click(x=x, y=y)
 
             logger.info(f"Challenge '{self._challenge_name}' performing: {i + 2}/{number}")
