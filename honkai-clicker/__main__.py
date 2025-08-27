@@ -1,23 +1,33 @@
+from HonkaiClicker import HonkaiClicker
+from PlanPerformer import Plan, PlanPerformer
+from Types import *
 import logging
 import sys
 import traceback
-from HonkaiClicker import HonkaiClicker, Challenge, ChallengeType, ResourceType
+
+
+GAME_EXECUTABLE = r"S:\Games\Star Rail Games\StarRail.exe"
 
 
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     clicker = HonkaiClicker()
-    challenges = [
-        Challenge(ChallengeType.SEPAL_GOLD, ResourceType.MONEY, 24),
-        #Challenge(ChallengeType.SEPAL_GOLD, ResourceType.CHARACTER_EXP, 24),
-        #Challenge(ChallengeType.SEPAL_GOLD, ResourceType.WEAPON_EXP, 1)
-    ]
+    plan = Plan()
+
+    # Установка плана для фарма
+    #plan.add(ChallengeType.SEPAL_GOLD, BaseMaterial.TREASURE_BUD, 1)
+    #plan.add(ChallengeType.SEPAL_GOLD, BaseMaterial.MEMORIES_BUD, 1)
+    plan.add(ChallengeType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 10)
 
     try:
-        clicker.start_game("S:\Games\Star Rail\Games\StarRail.exe")
+        clicker.start_game(GAME_EXECUTABLE)
         clicker.login()
-        clicker.accomplish_challenges(challenges)
+
+        plan_performer = PlanPerformer(clicker, plan)
+        plan_performer.execute()
+    except RuntimeError as error:
+        logging.error(error)
     except:
         logging.error(traceback.format_exc())
 
