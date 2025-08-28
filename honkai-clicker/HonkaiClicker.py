@@ -58,7 +58,7 @@ class HonkaiClicker:
     def kill_game(self):
         if self._game_process is not None:
             logger.info(f"Shutting down HSR")
-            self._game_process.kill()
+            self._game_process.terminate()
             self._game_process = None
 
     def login(self):

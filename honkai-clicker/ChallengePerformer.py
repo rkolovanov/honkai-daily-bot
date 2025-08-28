@@ -8,6 +8,11 @@ import time
 logger = logging.getLogger(__name__)
 
 
+class ChallengePerformException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 class Challenge:
     def __init__(self, challenge_type: ChallengeType, resource: enum.Enum, number: int):
         self.challenge_type = challenge_type
@@ -60,7 +65,7 @@ class BaseChallengePerformer:
             def __call__(self, *args, **kwargs):
                 try:
                     self._clicker.find_on_screen("restore_energy")
-                    raise RuntimeError("Not enough energy! Finishing...")
+                    raise ChallengePerformException("Not enough energy! Finishing...")
                 except pyautogui.ImageNotFoundException:
                     pass
 

@@ -1,34 +1,74 @@
 from HonkaiClicker import HonkaiClicker
 from PlanPerformer import Plan, PlanPerformer
+from ChallengePerformer import ChallengePerformException
 from Types import *
+import configparser
+import ctypes
+import elevate
 import logging
 import sys
 import traceback
 
 
-GAME_EXECUTABLE = r"S:\Games\Star Rail Games\StarRail.exe"
+logger = logging.getLogger("main")
+
+
+def init_config():
+    config_path = "data/config.ini"
+    config = configparser.ConfigParser()
+
+    config.read(config_path)
+
+    if not config.has_section("hsr"):
+        config.add_section("hsr")
+
+    if not config.has_option("hsr", "executable_path"):
+        config.set("hsr", "executable_path", "S:\Games\Star Rail Games\StarRail.exe")
+
+    with open(config_path, "w") as file:
+        config.write(file)
+
+    return config
+
+
+def create_farm_plan() -> Plan:
+    plan = Plan()
+
+    # Farm plan setup
+    plan.add(ChallengeType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 6)
+
+    return plan
+
+
+def main():
+    config = init_config()
+    clicker = HonkaiClicker()
+    plan = create_farm_plan()
+    plan_performer = PlanPerformer(clicker, plan)
+
+    try:
+        clicker.start_game(config.get("hsr", "executable_path"))
+        clicker.login()
+        plan_performer.execute()
+    except ChallengePerformException as error:
+        logger.error(error)
+    except:
+        clicker.kill_game()
+        raise
+
+    clicker.kill_game()
 
 
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-    clicker = HonkaiClicker()
-    plan = Plan()
-
-    # Установка плана для фарма
-    #plan.add(ChallengeType.SEPAL_GOLD, BaseMaterial.TREASURE_BUD, 1)
-    #plan.add(ChallengeType.SEPAL_GOLD, BaseMaterial.MEMORIES_BUD, 1)
-    plan.add(ChallengeType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 10)
-
     try:
-        clicker.start_game(GAME_EXECUTABLE)
-        clicker.login()
-
-        plan_performer = PlanPerformer(clicker, plan)
-        plan_performer.execute()
-    except RuntimeError as error:
-        logging.error(error)
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            logger.info("Requesting admin rights...")
+            elevate.elevate()
+        else:
+            main()
+    except Exception as ex:
+        logger.error(ex)
     except:
-        logging.error(traceback.format_exc())
-
-    clicker.kill_game()
+        traceback.format_exc()
