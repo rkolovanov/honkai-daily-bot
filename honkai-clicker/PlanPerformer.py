@@ -1,18 +1,10 @@
-from ChallengePerformer import *
 from HonkaiClicker import HonkaiClicker
+from Plan import Plan
+from TaskPerformers import *
 import logging
 
 
 logger = logging.getLogger(__name__)
-
-
-class Plan:
-    def __init__(self):
-        self.challenges = []
-
-    def add(self, challenge_type: ChallengeType, resource: enum.Enum, number: int):
-        challenge = Challenge(challenge_type, resource, number)
-        self.challenges.append(challenge)
 
 
 class PlanPerformer:
@@ -20,20 +12,25 @@ class PlanPerformer:
         self._clicker = clicker
         self._plan = plan
 
-    def _create_challenge_performer(self, challenge: Challenge):
-        if challenge.challenge_type == ChallengeType.SEPAL_GOLD:
-            return GoldSepalPerformer(self._clicker, challenge.resource)
-        elif challenge.challenge_type == ChallengeType.CORROSION_CAVE:
-            return CorrosionCavePerformer(self._clicker, challenge.resource)
+    def _create_task_performer(self, task: Task):
+        if task.get_type() == TaskType.SEPAL_GOLD:
+            return GoldSepalPerformer(self._clicker, task)
+        elif task.get_type() == TaskType.CORROSION_CAVE:
+            return CorrosionCavePerformer(self._clicker, task)
+        elif task.get_type() == TaskType.AWARDS_COLLECTION:
+            return AwardsCollector(self._clicker, task)
 
         return None
 
     def execute(self):
-        for challenge in self._plan.challenges:
-            performer = self._create_challenge_performer(challenge)
+        for challenge in self._plan.tasks:
+            performer = self._create_task_performer(challenge)
             if performer is None:
-                logger.error(f"Challenge '{challenge.challenge_type.name}' performer not implemented. Skipping...")
+                logger.error(f"Task performer for '{challenge.challenge_type.name}' is not implemented. Skipping...")
                 continue
 
-            performer.prepare()
-            performer.execute(challenge.number)
+            try:
+                performer.prepare()
+                performer.perform()
+            except TaskPerformException as error:
+                logger.error("Error while performin task: " + str(error))

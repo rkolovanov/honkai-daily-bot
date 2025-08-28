@@ -1,24 +1,24 @@
 import enum
 
 
-class ChallengeType(enum.Enum):
+class TaskType(enum.Enum):
     """
-    Испытание
+    Тип задания
     """
-    NONE = 0
     DECORATION_EXTRACTION = 1  # Извлечение украшений (TODO: Реализовать)
     SEPAL_GOLD = 2             # Золотой чашелист
     SEPAL_CRIMSON = 3          # Багровый чашелист (TODO: Реализовать)
     STAGNANT_SHADOW = 4        # Застойная тень (TODO: Реализовать)
     CORROSION_CAVE = 5         # Пещера коррозии
     ECHO_OF_WAR = 6            # Эхо войны (TODO: Реализовать)
+    ASSIGNMENTS = 7            # Поручения (TODO: Реализовать)
+    AWARDS_COLLECTION = 8      # Получение наград
 
 
 class BaseMaterial(enum.Enum):
     """
     Базовые материалы
     """
-    NONE = 0
     MEMORIES_BUD = 1  # Бутон воспоминаний (опыт для персонажа)
     ETHER_BUD = 2     # Бутон эфира (опыт для конуса)
     TREASURE_BUD = 3  # Бутон сокровищ (деньги)
@@ -28,7 +28,6 @@ class TraceMaterial(enum.Enum):
     """
     Материал следов
     """
-    NONE = 0
     HARMONY_A = 1       # Гармония
     HARMONY_B = 2
     DESTRUCTION_A = 3   # Разрушение
@@ -57,7 +56,6 @@ class PlanetaryDecorationChallenge(enum.Enum):
     """
     Испытания извлечения планетарных украшений
     """
-    NONE = 0
     CONTINUOUS_WALLS = 1    # Непрерывные стены
     MOLTEN_CORE = 2         # Расплавленный сердечник
     GENTLE_SPEECHES = 3     # Нежные речи
@@ -75,7 +73,6 @@ class CorrosionCaveChallenge(enum.Enum):
     """
     Испытания реликвий
     """
-    NONE = 0
     ICY_WIND_PATH = 1                   # Путь ледяного ветра
     FAST_FIST_PATH = 2                  # Путь быстрого кулака
     WANDERING_PATH = 3                  # Путь скитаний
