@@ -75,7 +75,8 @@ class BattleTaskPerformer(BaseTaskPerformer):
 
         logger.info(f"Battle task '{self._task.get_name()}' performing: 1 of {self._number}")
 
-        self._clicker.wait_and_click_on_image("automode")
+        self._clicker.wait_for_image_appears("in_battle")
+        self._clicker.click_on_auto_battle()
 
         for i in range(self._number - 1):
             self._clicker.wait_and_click_on_image("start_again", no_energy_handler)
@@ -121,7 +122,7 @@ class GoldSepalPerformer(BattleTaskPerformer):
 
         x, y = self._clicker.wait_for_image_appears(self._get_blossom_image())
         self._clicker.wait_and_click_on_image("enter", region=(int(x), int(y), 1000, 250))
-        self._clicker.wait_for_gui_updates(0.5)
+        self._clicker.wait_for_gui_updates()
 
         return True
 
@@ -160,7 +161,7 @@ class CorrosionCavePerformer(BattleTaskPerformer):
         path_scroller = NotFoundsScroller(self._clicker, "path")
         x, y = self._clicker.wait_for_image_appears(f"paths/{self._resource.name}", path_scroller)
         self._clicker.wait_and_click_on_image("enter", path_scroller, region=(int(x), int(y) - 100, 1000, 250))
-        self._clicker.wait_for_gui_updates(0.5)
+        self._clicker.wait_for_gui_updates()
 
         return True
 

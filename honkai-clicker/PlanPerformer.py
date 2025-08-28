@@ -23,14 +23,14 @@ class PlanPerformer:
         return None
 
     def execute(self):
-        for challenge in self._plan.tasks:
-            performer = self._create_task_performer(challenge)
+        for task in self._plan.tasks:
+            performer = self._create_task_performer(task)
             if performer is None:
-                logger.error(f"Task performer for '{challenge.challenge_type.name}' is not implemented. Skipping...")
+                logger.error(f"Task performer for '{task.get_type().name}' is not implemented. Skipping...")
                 continue
 
             try:
-                performer.prepare()
-                performer.perform()
+                if performer.prepare():
+                    performer.perform()
             except TaskPerformException as error:
-                logger.error("Error while performin task: " + str(error))
+                logger.error("Error while performing task: " + str(error))

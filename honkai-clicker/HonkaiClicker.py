@@ -29,6 +29,10 @@ class HonkaiClicker:
         logger.debug(f"Moving cursor to center.")
         pyautogui.moveTo(x=self._window_size.width / 2, y=self._window_size.height / 2)
 
+    def click_on_auto_battle(self):
+        logger.debug(f"Clicking on auto-battle button.")
+        pyautogui.click(x=self._window_size.width - 200, y=50)
+
     def find_on_screen(self, image: str, confidence: float = 0.9, region: (int, int, int, int) = None):
         image_path = self.get_image_path(image)
         try:
