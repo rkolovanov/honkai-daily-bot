@@ -36,9 +36,11 @@ def create_farm_plan() -> Plan:
     # Farm plan setup
     #plan.add_battle_task(TaskType.SEPAL_GOLD, BaseMaterial.TREASURE_BUD, 2)
     #plan.add_battle_task(TaskType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 7)
-    #plan.add_task(TaskType.ASSIGNMENTS)
+    plan.add_battle_task(TaskType.ECHO_OF_WAR, EchoOfWarChallenge.TWILIGHT_LOOK, 2)
+    plan.add_battle_task(TaskType.ECHO_OF_WAR, EchoOfWarChallenge.INNER_BEAST, 1)
+    plan.add_task(TaskType.ASSIGNMENTS)
     plan.add_task(TaskType.NAMELESS_HONOR)
-    #plan.add_task(TaskType.AWARDS_COLLECTION)
+    plan.add_task(TaskType.AWARDS_COLLECTION)
 
     return plan
 

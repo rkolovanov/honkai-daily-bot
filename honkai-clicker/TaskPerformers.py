@@ -82,6 +82,20 @@ class BaseTaskPerformer:
             raise exception
 
 
+class NotFoundsScroller:
+    def __init__(self, clicker: HonkaiClicker, scroll_position_image: str):
+        self._clicker = clicker
+        self._scroll_position_image = scroll_position_image
+        self._x = None
+        self._y = None
+
+    def __call__(self, *args, **kwargs):
+        if self._x is None or self._y is None:
+            self._x, self._y = self._clicker.wait_for_image_appears(self._scroll_position_image)
+        pyautogui.moveTo(self._x, self._y)
+        pyautogui.scroll(-100)
+
+
 class BattleTaskPerformer(BaseTaskPerformer):
     def __init__(self, clicker: HonkaiClicker, task: Task):
         super().__init__(clicker, task)
@@ -129,6 +143,20 @@ class BattleTaskPerformer(BaseTaskPerformer):
 
         return True
 
+    def _open_daily_training_section(self, section_image: str):
+        x, y = self._clicker.wait_for_image_appears("daily_training")
+        pyautogui.keyDown('Alt')
+        pyautogui.click(x=x, y=y)
+        pyautogui.keyUp('Alt')
+        self._clicker.wait_for_gui_updates(0.5)
+
+        self._clicker.wait_and_click_on_images(["daily_training_2", "daily_training_2_2"])
+        self._clicker.wait_for_gui_updates(0.5)
+
+        scroller = NotFoundsScroller(self._clicker, "sepal_crimson")
+        self._clicker.wait_and_click_on_image(section_image, scroller)
+        self._clicker.wait_for_gui_updates(0.5)
+
 
 class GoldSepalPerformer(BattleTaskPerformer):
     def __init__(self, clicker: HonkaiClicker, task: Task):
@@ -145,16 +173,7 @@ class GoldSepalPerformer(BattleTaskPerformer):
         return blossom_image
 
     def _prepare(self) -> bool:
-        x, y = self._clicker.wait_for_image_appears("daily_training")
-        pyautogui.keyDown('Alt')
-        pyautogui.click(x=x, y=y)
-        pyautogui.keyUp('Alt')
-        self._clicker.wait_for_gui_updates(0.5)
-
-        self._clicker.wait_and_click_on_images(["daily_training_2", "daily_training_2_2"])
-        self._clicker.wait_for_gui_updates(0.5)
-        self._clicker.wait_and_click_on_image("sepal_gold")
-        self._clicker.wait_for_gui_updates(0.5)
+        self._open_daily_training_section("sepal_gold")
 
         x, y = self._clicker.wait_for_image_appears(self._get_blossom_image())
         self._clicker.wait_and_click_on_image("enter", region=(int(x), int(y), 1000, 250))
@@ -168,35 +187,26 @@ class CorrosionCavePerformer(BattleTaskPerformer):
         super().__init__(clicker, task)
 
     def _prepare(self) -> bool:
-        x, y = self._clicker.wait_for_image_appears("daily_training")
-        pyautogui.keyDown('Alt')
-        pyautogui.click(x=x, y=y)
-        pyautogui.keyUp('Alt')
-        self._clicker.wait_for_gui_updates(0.5)
-
-        self._clicker.wait_and_click_on_images(["daily_training_2", "daily_training_2_2"])
-        self._clicker.wait_for_gui_updates(0.5)
-
-        class NotFoundsScroller:
-            def __init__(self, clicker: HonkaiClicker, scroll_position_image: str):
-                self._clicker = clicker
-                self._scroll_position_image = scroll_position_image
-                self._x = None
-                self._y = None
-
-            def __call__(self, *args, **kwargs):
-                if self._x is None or self._y is None:
-                    self._x, self._y = self._clicker.wait_for_image_appears(self._scroll_position_image)
-                pyautogui.moveTo(self._x, self._y)
-                pyautogui.scroll(-100)
-
-        corrosion_cave_scroller = NotFoundsScroller(self._clicker, "sepal_crimson")
-        self._clicker.wait_and_click_on_image("corrosion_cave", corrosion_cave_scroller)
-        self._clicker.wait_for_gui_updates(0.5)
+        self._open_daily_training_section("corrosion_cave")
 
         path_scroller = NotFoundsScroller(self._clicker, "path")
         x, y = self._clicker.wait_for_image_appears(f"paths/{self._resource.name}", path_scroller)
         self._clicker.wait_and_click_on_image("enter", path_scroller, region=(int(x), int(y) - 100, 1000, 250))
+        self._clicker.wait_for_gui_updates()
+
+        return True
+
+
+class EchoOfWarPerformer(BattleTaskPerformer):
+    def __init__(self, clicker: HonkaiClicker, task: Task):
+        super().__init__(clicker, task)
+
+    def _prepare(self) -> bool:
+        self._open_daily_training_section("echo_of_war")
+
+        boss_scroller = NotFoundsScroller(self._clicker, "enter")
+        x, y = self._clicker.wait_for_image_appears(f"bosses/{self._resource.name}", boss_scroller)
+        self._clicker.wait_and_click_on_image("enter", boss_scroller, region=(int(x), int(y) - 100, 1000, 250))
         self._clicker.wait_for_gui_updates()
 
         return True
@@ -259,6 +269,7 @@ class NamelessHonorCollector(BaseTaskPerformer):
         except TimeoutError:
             pass
 
+        self._clicker.wait_for_gui_updates()
         pyautogui.press('esc')
         self._clicker.wait_for_gui_updates(1.0)
 
@@ -297,6 +308,7 @@ class AwardsCollector(BaseTaskPerformer):
         except TimeoutError:
             pass
 
+        self._clicker.wait_for_gui_updates()
         pyautogui.press('esc')
         self._clicker.wait_for_gui_updates(1.0)
 

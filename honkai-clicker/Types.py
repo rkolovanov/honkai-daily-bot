@@ -13,7 +13,7 @@ class TaskType(enum.Enum):
     ECHO_OF_WAR = 6            # Эхо войны (TODO: Реализовать)
     VIRTUAL_UNIVERSE = 7       # Виртуальная вселенная (TODO: Реализовать)
     ASSIGNMENTS = 8            # Сбор и повтор поручений
-    NAMELESS_HONOR = 9         # Получение наград миссий чести безымянных (TODO: Реализовать)
+    NAMELESS_HONOR = 9         # Получение наград миссий чести безымянных
     SUPPORT_COLLECTION = 10    # Получение наград поддержки (TODO: Реализовать)
     AWARDS_COLLECTION = 11     # Получение наград ежедневной тренировки
 
@@ -89,3 +89,16 @@ class CorrosionCaveChallenge(enum.Enum):
     SINGING_TO_ACCOMPANIMENT_PATH = 11  # Путь пения под аккомпанемент
     THUNDERCLAP_PATH = 12               # Путь раската грома
     DELUSION_PATH = 13                  # Путь заблуждения
+
+
+class EchoOfWarChallenge(enum.Enum):
+    """
+    Боссы эха войны
+    """
+    DESTRUCTION_BEGINNING = 1    # НАЧАЛО РАЗРУШЕНИЯ
+    PERMAFROST_END = 2           # КОНЕЦ ВЕЧНОЙ МЕРЗЛОТЫ
+    IMMORTALITY_SEED = 3         # СЕМЯ БЕССМЕРТИЯ
+    OLD_WORMHOLE_NIGHTMARES = 4  #
+    MORTAL_DREAMS = 5            #
+    INNER_BEAST = 6              #
+    TWILIGHT_LOOK = 7            #
