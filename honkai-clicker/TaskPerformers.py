@@ -276,6 +276,44 @@ class NamelessHonorCollector(BaseTaskPerformer):
         return True
 
 
+class SupportAwardsCollector(BaseTaskPerformer):
+    def __init__(self, clicker: HonkaiClicker, task: Task):
+        super().__init__(clicker, task)
+
+    def _prepare(self) -> bool:
+        x, y = self._clicker.wait_for_image_appears("phone")
+        pyautogui.keyDown('Alt')
+        pyautogui.click(x=x, y=y)
+        pyautogui.keyUp('Alt')
+        self._clicker.wait_for_gui_updates(0.5)
+
+        try:
+            self._clicker.wait_and_click_on_image("profile", timeout=5.0)
+            self._clicker.wait_for_gui_updates()
+            self._clicker.wait_and_click_on_image("user_profile")
+            self._clicker.wait_for_gui_updates()
+        except TimeoutError:
+            return False
+
+        return True
+
+    def _perform(self) -> bool:
+        try:
+            self._clicker.wait_and_click_on_image("support_reward", timeout=5.0)
+            self._clicker.wait_for_gui_updates()
+            pyautogui.press('esc')
+            self._clicker.wait_for_gui_updates()
+        except TimeoutError:
+            pass
+
+        pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates()
+        pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates(1.0)
+
+        return True
+
+
 class AwardsCollector(BaseTaskPerformer):
     def __init__(self, clicker: HonkaiClicker, task: Task):
         super().__init__(clicker, task)

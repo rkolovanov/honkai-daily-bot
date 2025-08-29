@@ -10,11 +10,11 @@ class TaskType(enum.Enum):
     SEPAL_CRIMSON = 3          # Багровый чашелист (TODO: Реализовать)
     STAGNANT_SHADOW = 4        # Застойная тень (TODO: Реализовать)
     CORROSION_CAVE = 5         # Пещера коррозии
-    ECHO_OF_WAR = 6            # Эхо войны (TODO: Реализовать)
+    ECHO_OF_WAR = 6            # Эхо войны
     VIRTUAL_UNIVERSE = 7       # Виртуальная вселенная (TODO: Реализовать)
     ASSIGNMENTS = 8            # Сбор и повтор поручений
     NAMELESS_HONOR = 9         # Получение наград миссий чести безымянных
-    SUPPORT_COLLECTION = 10    # Получение наград поддержки (TODO: Реализовать)
+    SUPPORT_COLLECTION = 10    # Получение наград поддержки
     AWARDS_COLLECTION = 11     # Получение наград ежедневной тренировки
 
 

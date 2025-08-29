@@ -23,6 +23,8 @@ class PlanPerformer:
             return AssignmentsCollector(self._clicker, task)
         elif task.get_type() == TaskType.NAMELESS_HONOR:
             return NamelessHonorCollector(self._clicker, task)
+        elif task.get_type() == TaskType.SUPPORT_COLLECTION:
+            return SupportAwardsCollector(self._clicker, task)
         elif task.get_type() == TaskType.AWARDS_COLLECTION:
             return AwardsCollector(self._clicker, task)
 
