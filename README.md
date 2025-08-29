@@ -3,7 +3,7 @@
 In development. Now clicker app can:
 - Start game;
 - Wait for login in;
-- Accomplish some challenges (gold sepal, corrosion cave);
+- Accomplish some challenges and collect rewards;
 - Exit game (kill it).
 
 Challenged to do is set in `honkai-clicker/__main__.py` file.
