@@ -19,6 +19,8 @@ class PlanPerformer:
             return CorrosionCavePerformer(self._clicker, task)
         elif task.get_type() == TaskType.ASSIGNMENTS:
             return AssignmentsCollector(self._clicker, task)
+        elif task.get_type() == TaskType.NAMELESS_HONOR:
+            return NamelessHonorCollector(self._clicker, task)
         elif task.get_type() == TaskType.AWARDS_COLLECTION:
             return AwardsCollector(self._clicker, task)
 

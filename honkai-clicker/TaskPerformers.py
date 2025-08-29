@@ -1,4 +1,4 @@
-from Exceptions import TaskPerformException, NotEnoughEnergyException
+from Exceptions import *
 from HonkaiClicker import HonkaiClicker
 from Task import Task
 from Types import *
@@ -53,16 +53,7 @@ class BaseTaskPerformer:
         return True
 
     def _handle_exception(self, exception: TaskPerformException):
-        if isinstance(exception, NotEnoughEnergyException):
-            self._clicker.press_escape()
-            self._clicker.wait_for_gui_updates()
-            self._clicker.wait_for_images_appears(["finish_challenge", "start_challenge"])
-            self._clicker.wait_for_gui_updates(0.5)
-
-            result = self._clicker.find_on_screen("finish_challenge")
-            if result is not None:
-                pyautogui.click(x=result[0], y=result[1])
-
+        def _return_to_main_screen():
             class EscapeToMainScreen:
                 def __init__(self, clicker: HonkaiClicker):
                     self._clicker = clicker
@@ -73,6 +64,20 @@ class BaseTaskPerformer:
 
             self._clicker.wait_for_image_appears("character", EscapeToMainScreen(self._clicker))
             self._clicker.wait_for_gui_updates()
+
+        if isinstance(exception, NotEnoughEnergyException):
+            self._clicker.press_escape()
+            self._clicker.wait_for_gui_updates()
+            self._clicker.wait_for_images_appears(["finish_challenge", "start_challenge"])
+            self._clicker.wait_for_gui_updates(0.5)
+
+            result = self._clicker.find_on_screen("finish_challenge")
+            if result is not None:
+                pyautogui.click(x=result[0], y=result[1])
+
+            _return_to_main_screen()
+        elif isinstance(exception, NoAssignmentsException):
+            _return_to_main_screen()
         else:
             raise exception
 
@@ -219,14 +224,41 @@ class AssignmentsCollector(BaseTaskPerformer):
             self._clicker.wait_and_click_on_image("get_all", timeout=5.0)
             self._clicker.wait_for_gui_updates()
         except TimeoutError:
-            logger.info("It seems that the assignments can't be collected yet.")
-            return False
+            raise NoAssignmentsException(self._task, "It seems that the assignments can't be collected yet.")
 
         self._clicker.wait_and_click_on_image("repeat")
         self._clicker.wait_for_gui_updates()
 
         pyautogui.press('esc')
         self._clicker.wait_for_gui_updates()
+        pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates(1.0)
+
+        return True
+
+
+class NamelessHonorCollector(BaseTaskPerformer):
+    def __init__(self, clicker: HonkaiClicker, task: Task):
+        super().__init__(clicker, task)
+
+    def _prepare(self) -> bool:
+        x, y = self._clicker.wait_for_images_appears(["nameless_honor", "nameless_honor_2"])
+        pyautogui.keyDown('Alt')
+        pyautogui.click(x=x, y=y)
+        pyautogui.keyUp('Alt')
+        self._clicker.wait_for_gui_updates()
+
+        self._clicker.wait_and_click_on_image("nameless_honor_missions")
+        self._clicker.wait_for_gui_updates()
+
+        return True
+
+    def _perform(self) -> bool:
+        try:
+            self._clicker.wait_and_click_on_image("get_all", timeout=2.0)
+        except TimeoutError:
+            pass
+
         pyautogui.press('esc')
         self._clicker.wait_for_gui_updates(1.0)
 

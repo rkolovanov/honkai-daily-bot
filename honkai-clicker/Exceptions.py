@@ -13,3 +13,8 @@ class TaskPerformException(Exception):
 class NotEnoughEnergyException(TaskPerformException):
     def __init__(self, task: Task, message: str):
         super().__init__(task, message)
+
+
+class NoAssignmentsException(TaskPerformException):
+    def __init__(self, task: Task, message: str):
+        super().__init__(task, message)
