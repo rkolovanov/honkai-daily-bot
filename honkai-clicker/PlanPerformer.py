@@ -17,6 +17,8 @@ class PlanPerformer:
             return GoldSepalPerformer(self._clicker, task)
         elif task.get_type() == TaskType.CORROSION_CAVE:
             return CorrosionCavePerformer(self._clicker, task)
+        elif task.get_type() == TaskType.ASSIGNMENTS:
+            return AssignmentsCollector(self._clicker, task)
         elif task.get_type() == TaskType.AWARDS_COLLECTION:
             return AwardsCollector(self._clicker, task)
 

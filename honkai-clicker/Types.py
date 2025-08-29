@@ -11,9 +11,11 @@ class TaskType(enum.Enum):
     STAGNANT_SHADOW = 4        # Застойная тень (TODO: Реализовать)
     CORROSION_CAVE = 5         # Пещера коррозии
     ECHO_OF_WAR = 6            # Эхо войны (TODO: Реализовать)
-    ASSIGNMENTS = 7            # Поручения (TODO: Реализовать)
-    VIRTUAL_UNIVERSE = 8       # (TODO: Реализовать)
-    AWARDS_COLLECTION = 9      # Получение наград
+    VIRTUAL_UNIVERSE = 7       # (TODO: Реализовать)
+    ASSIGNMENTS = 8            # Сбор и повтор поручений (TODO: Реализовать)
+    NAMELESS_HONOR = 9         # Получение наград миссий чести безымянных
+    SUPPORT_COLLECTION = 10    # Получение наград поддержки
+    AWARDS_COLLECTION = 11     # Получение наград ежедневной тренировки
 
 
 class BaseMaterial(enum.Enum):
