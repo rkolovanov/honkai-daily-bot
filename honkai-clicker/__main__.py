@@ -34,21 +34,22 @@ def create_farm_plan() -> Plan:
     plan = Plan()
 
     # Farm plan setup
-    plan.add_battle_task(TaskType.SEPAL_GOLD, BaseMaterial.MEMORIES_BUD, 1)
-    #plan.add_battle_task(TaskType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 6)
-    #plan.add_task(TaskType.AWARDS_COLLECTION)
+    #plan.add_battle_task(TaskType.SEPAL_GOLD, BaseMaterial.MEMORIES_BUD, 1)
+    plan.add_battle_task(TaskType.CORROSION_CAVE, CorrosionCaveChallenge.DELUSION_PATH, 6)
+    plan.add_task(TaskType.ASSIGNMENTS)
+    plan.add_task(TaskType.AWARDS_COLLECTION)
 
     return plan
 
 
 def main():
     config = init_config()
-    clicker = HonkaiClicker()
+    clicker = HonkaiClicker(config.get("hsr", "executable_path"))
     plan = create_farm_plan()
     plan_performer = PlanPerformer(clicker, plan)
 
     try:
-        clicker.start_game(config.get("hsr", "executable_path"))
+        clicker.start_game()
         clicker.login()
         plan_performer.execute()
     except:

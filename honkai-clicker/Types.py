@@ -12,7 +12,8 @@ class TaskType(enum.Enum):
     CORROSION_CAVE = 5         # Пещера коррозии
     ECHO_OF_WAR = 6            # Эхо войны (TODO: Реализовать)
     ASSIGNMENTS = 7            # Поручения (TODO: Реализовать)
-    AWARDS_COLLECTION = 8      # Получение наград
+    VIRTUAL_UNIVERSE = 8       # (TODO: Реализовать)
+    AWARDS_COLLECTION = 9      # Получение наград
 
 
 class BaseMaterial(enum.Enum):

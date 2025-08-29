@@ -14,8 +14,9 @@ def timestamp() -> float:
 
 
 class HonkaiClicker:
-    def __init__(self):
+    def __init__(self, executable_path: str):
         self._game_process = None
+        self._executable_path = executable_path
         self._window_size = pyautogui.size()
         self._images_path = "images/" + str(self._window_size.width) + "x" + str(self._window_size.height)
 
@@ -28,6 +29,9 @@ class HonkaiClicker:
     def move_cursor_to_center(self):
         logger.debug(f"Moving cursor to center.")
         pyautogui.moveTo(x=self._window_size.width / 2, y=self._window_size.height / 2)
+
+    def press_escape(self):
+        pyautogui.press("esc")
 
     def click_on_auto_battle(self):
         logger.debug(f"Clicking on auto-battle button.")
@@ -78,9 +82,9 @@ class HonkaiClicker:
         logger.debug(f"Clicking on images '{', '.join(images)}'.")
         pyautogui.click(x=x, y=y)
 
-    def start_game(self, path: str):
-        logger.info(f"Starting Honkai Star Rail located on '{path}'.")
-        self._game_process = subprocess.Popen(path)
+    def start_game(self):
+        logger.info(f"Starting Honkai Star Rail located on '{self._executable_path}'.")
+        self._game_process = subprocess.Popen(self._executable_path)
 
     def kill_game(self):
         if self._game_process is not None:

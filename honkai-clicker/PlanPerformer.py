@@ -1,4 +1,4 @@
-from HonkaiClicker import HonkaiClicker
+from Exceptions import *
 from Plan import Plan
 from TaskPerformers import *
 import logging
@@ -32,5 +32,8 @@ class PlanPerformer:
             try:
                 if performer.prepare():
                     performer.perform()
-            except TaskPerformException as error:
-                logger.error("Error while performing task: " + str(error))
+            except Exception as error:
+                logger.error(f"Error while performing task: {error} Restarting game...")
+                self._clicker.kill_game()
+                self._clicker.start_game()
+                self._clicker.login()

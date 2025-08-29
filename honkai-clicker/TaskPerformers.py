@@ -1,10 +1,9 @@
-from Exceptions import TaskPerformException
+from Exceptions import TaskPerformException, NotEnoughEnergyException
 from HonkaiClicker import HonkaiClicker
 from Task import Task
 from Types import *
 import pyautogui
 import logging
-import time
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +17,11 @@ class BaseTaskPerformer:
     def prepare(self) -> bool:
         logger.info(f"Preparing for the task '{self._task.get_name()}'...")
 
-        result = self._prepare()
+        try:
+            result = self._prepare()
+        except TaskPerformException as exception:
+            result = False
+            self._handle_exception(exception)
 
         if result:
             logger.info(f"Preparation for the task '{self._task.get_name()}' is completed.")
@@ -30,7 +33,11 @@ class BaseTaskPerformer:
     def perform(self) -> bool:
         logger.info(f"Completing task '{self._task.get_name()}'...")
 
-        result = self._perform()
+        try:
+            result = self._perform()
+        except TaskPerformException as exception:
+            result = False
+            self._handle_exception(exception)
 
         if result:
             logger.info(f"Task '{self._task.get_name()}' is completed.")
@@ -45,6 +52,30 @@ class BaseTaskPerformer:
     def _perform(self) -> bool:
         return True
 
+    def _handle_exception(self, exception: TaskPerformException):
+        if isinstance(exception, NotEnoughEnergyException):
+            self._clicker.press_escape()
+            self._clicker.wait_for_gui_updates()
+            self._clicker.wait_for_images_appears(["finish_challenge", "start_challenge"])
+            self._clicker.wait_for_gui_updates(0.5)
+
+            result = self._clicker.find_on_screen("finish_challenge")
+            if result is not None:
+                pyautogui.click(x=result[0], y=result[1])
+
+            class EscapeToMainScreen:
+                def __init__(self, clicker: HonkaiClicker):
+                    self._clicker = clicker
+
+                def __call__(self, *args, **kwargs):
+                    self._clicker.press_escape()
+                    self._clicker.wait_for_gui_updates(1.0)
+
+            self._clicker.wait_for_image_appears("character", EscapeToMainScreen(self._clicker))
+            self._clicker.wait_for_gui_updates()
+        else:
+            raise exception
+
 
 class BattleTaskPerformer(BaseTaskPerformer):
     def __init__(self, clicker: HonkaiClicker, task: Task):
@@ -57,17 +88,16 @@ class BattleTaskPerformer(BaseTaskPerformer):
         self._clicker.wait_for_gui_updates()
 
         class NoEnergyHandler:
-            def __init__(self, clicker: HonkaiClicker):
+            def __init__(self, clicker: HonkaiClicker, task: Task):
                 self._clicker = clicker
+                self._task = task
 
             def __call__(self, *args, **kwargs):
-                try:
-                    self._clicker.find_on_screen("restore_energy")
-                    raise TaskPerformException("Not enough energy! Finishing...")
-                except pyautogui.ImageNotFoundException:
-                    pass
+                position = self._clicker.find_on_screen("restore_energy")
+                if position is not None:
+                    raise NotEnoughEnergyException(self._task, "Not enough energy.")
 
-        no_energy_handler = NoEnergyHandler(self._clicker)
+        no_energy_handler = NoEnergyHandler(self._clicker, self._task)
 
         self._clicker.wait_and_click_on_image("start_challenge", no_energy_handler)
         self._clicker.move_cursor_to_center()
@@ -90,6 +120,7 @@ class BattleTaskPerformer(BaseTaskPerformer):
 
         self._clicker.wait_for_image_appears("start_challenge")
         pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates(1.0)
 
         return True
 
@@ -166,6 +197,42 @@ class CorrosionCavePerformer(BattleTaskPerformer):
         return True
 
 
+class AssignmentsCollector(BaseTaskPerformer):
+    def __init__(self, clicker: HonkaiClicker, task: Task):
+        super().__init__(clicker, task)
+
+    def _prepare(self) -> bool:
+        x, y = self._clicker.wait_for_image_appears("phone")
+        pyautogui.keyDown('Alt')
+        pyautogui.click(x=x, y=y)
+        pyautogui.keyUp('Alt')
+        self._clicker.wait_for_gui_updates(0.5)
+
+        self._clicker.wait_and_click_on_image("assignments")
+        self._clicker.wait_for_image_appears("assignments_confirm")
+        self._clicker.wait_for_gui_updates()
+
+        return True
+
+    def _perform(self) -> bool:
+        try:
+            self._clicker.wait_and_click_on_image("get_all", timeout=5.0)
+            self._clicker.wait_for_gui_updates()
+        except TimeoutError:
+            logger.info("It seems that the assignments can't be collected yet.")
+            return False
+
+        self._clicker.wait_and_click_on_image("repeat")
+        self._clicker.wait_for_gui_updates()
+
+        pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates()
+        pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates(1.0)
+
+        return True
+
+
 class AwardsCollector(BaseTaskPerformer):
     def __init__(self, clicker: HonkaiClicker, task: Task):
         super().__init__(clicker, task)
@@ -199,5 +266,6 @@ class AwardsCollector(BaseTaskPerformer):
             pass
 
         pyautogui.press('esc')
+        self._clicker.wait_for_gui_updates(1.0)
 
         return True
